@@ -1,0 +1,39 @@
+buildscript {
+    repositories {
+        jcenter()
+        google()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.0.1'
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+        google()
+    }
+}
+
+project.ext.i2pVersion = '0.9.33'
+
+configure([project(':core'), project(':webapp')]) {
+    project.version = '0.4.7'
+
+    project.afterEvaluate {
+        jar {
+            manifest {
+                attributes 'Implementation-Version': project.version
+            }
+        }
+
+        sourceCompatibility = 1.7
+        targetCompatibility = 1.7
+        // Set i2pBootClasspath=/path/to/rt.jar:/path/to/jce.jar in ~/.gradle/gradle.properties if needed
+        if (i2pBootClasspath) {
+            project.tasks.withType(AbstractCompile, { AbstractCompile ac ->
+                ac.options.bootstrapClasspath = files(i2pBootClasspath)
+            })
+        }
+    }
+}
